@@ -1,11 +1,12 @@
 namespace ToDoSharp.Cli.Models;
+
 public class ToDoList
 {
-    public string Title{get; set;} = "";
-    public int Id {get; set;}
-    public DateTime CreatedAt {get; set;}
-    public DateTime? WarningDate {get; set;}
-    public List<Task> Todo {get; set;} = new();
+    public string Title { get; set; } = "";
+    public int Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? WarningDate { get; set; }
+    public List<Task> Todo { get; set; } = new();
 
     public ToDoList(string title)
     {

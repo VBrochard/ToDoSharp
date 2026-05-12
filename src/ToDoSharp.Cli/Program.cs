@@ -1,3 +1,6 @@
 ﻿using ToDoSharp.Cli.Menus;
+using ToDoSharp.Cli.Services;
 
-new MainMenu().Run();
+ListManager listManager = new ListManager();
+MainMenu menu = new MainMenu(listManager);
+menu.Run();
