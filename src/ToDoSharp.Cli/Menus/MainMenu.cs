@@ -1,12 +1,14 @@
 namespace ToDoSharp.Cli.Menus;
-
+using ToDoSharp.Cli.Display;
+using ToDoSharp.Cli.Models;
+using ToDoSharp.Cli.Services;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ToDoSharp.Cli.Services;
 
 public class MainMenu
 {
     private readonly ListManager _listManager;
+    private readonly ListDisplay _listDisplay = new ListDisplay();
 
     public MainMenu(ListManager listManager)
     {
@@ -21,10 +23,14 @@ public class MainMenu
         while (running)
         {
             Console.Clear();
-            Console.WriteLine("1. Voir tes listes");
-            Console.WriteLine("2. Créer une nouvelle listes");
-            Console.WriteLine("3. Ouvrir une liste");
-            Console.WriteLine("4. Quitter le programme");
+            var lists = _listManager.GetLists();
+            _listDisplay.ShowLists(lists);
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("1. Créer une nouvelle liste");
+            Console.WriteLine("2. Ouvrir une liste");
+            Console.WriteLine("3. Quitter le programme");
 
             Console.Write("Votre choix : ");
             {
@@ -39,17 +45,13 @@ public class MainMenu
                     {
                         case "1":
                             Console.Clear();
-                            Console.WriteLine("Vos listes : ");
-                            _listManager.GetLists();
-                            Console.WriteLine("Presse Enter pour retourner au menu");
-                            Console.ReadLine();
-                            break;
-
-                        case "2":
-                            Console.Clear();
-                            Console.WriteLine("Créateur de listes");
+                            Console.WriteLine("Créateur de listes : ");
+                            Console.WriteLine();
+                            _listDisplay.ShowLists(lists);
+                            Console.WriteLine();
+                            Console.WriteLine();
                             string? title;
-                            Console.Write("Titre :");
+                            Console.Write("Titre : ");
                             title = Console.ReadLine();
                             if (string.IsNullOrWhiteSpace(title))
                             {
@@ -59,17 +61,67 @@ public class MainMenu
                             if (_listManager.CreateList(title))
                             {
                                 Console.WriteLine($"Liste {title} crée ");
+                                Console.WriteLine("Presse Enter pour retourner au menu");
+                                Console.ReadLine();
                             }
                             else
                             {
-                                Console.WriteLine("Erreur création liste");
+                                Console.WriteLine("Nom incorrect ou déjà existant");
+                                Console.WriteLine("Presse Enter pour retourner au menu");
+                                Console.ReadLine();
                             }
                             break;
 
-                        case "3":
-                        break;
+                        case "2":
+                        {
+                            Console.Clear();
 
-                        case "4":
+                            lists = _listManager.GetLists();
+
+                            if (lists.Count == 0)
+                            {
+                                Console.WriteLine("Aucune liste à ouvrir.");
+                                Console.WriteLine("Appuie sur Entrée pour retourner au menu");
+                                Console.ReadLine();
+                                break;
+                            }
+
+                            Console.WriteLine("Choisis une liste :");
+                            Console.WriteLine();
+
+                            _listDisplay.ShowLists(lists);
+
+                            Console.WriteLine();
+                            Console.Write("Numéro de la liste : ");
+                            string input = Console.ReadLine() ?? "";
+
+                            if (!int.TryParse(input, out int selectedNumber))
+                            {
+                                Console.WriteLine("Numéro invalide.");
+                                Console.WriteLine("Appuie sur Entrée pour retourner au menu");
+                                Console.ReadLine();
+                                break;
+                            }
+
+                            int index = selectedNumber - 1;
+
+                            if (index < 0 || index >= lists.Count)
+                            {
+                                Console.WriteLine("Liste introuvable.");
+                                Console.WriteLine("Appuie sur Entrée pour retourner au menu");
+                                Console.ReadLine();
+                                break;
+                            }
+
+                            ToDoList selectedList = lists[index];
+
+                            ListMenu listMenu = new ListMenu(selectedList);
+                            listMenu.Run();
+
+                            break;
+                        }
+
+                        case "3":
                             Console.Clear();
                             Console.WriteLine("Au revoir !");
                             running = false;

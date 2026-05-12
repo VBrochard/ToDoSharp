@@ -6,7 +6,7 @@ public class ToDoList
     public int Id { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? WarningDate { get; set; }
-    public List<Task> Todo { get; set; } = new();
+    public List<ToDoTask> Tasks { get; set; } = new();
 
     public ToDoList(string title)
     {
